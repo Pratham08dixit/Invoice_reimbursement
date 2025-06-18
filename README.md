@@ -17,7 +17,7 @@ The Invoice Reimbursement System addresses the challenge of manually processing 
 ### Core Technologies
 - **Programming Language**: Python 3.8+
 - **Backend Framework**: FastAPI
-- **Frontend**: Streamlit (Clean UI without sidebar)
+- **Frontend**: Streamlit (Clean UI)
 - **Large Language Model**: Google Gemini API (gemini-1.5-flash)
 - **Vector Database**: FAISS (Facebook AI Similarity Search)
 - **Embedding Model**: Sentence Transformers (all-MiniLM-L6-v2)
@@ -92,42 +92,6 @@ invoice-reimbursement-system/
     └── conversation_manager.py # Chat context
 ```
 
-## 🧠 Technical Implementation Details
-
-### LLM and Embedding Model Choices
-
-#### Google Gemini API (gemini-1.5-flash)
-- **Rationale**: Selected for its superior reasoning capabilities, fast response times, and cost-effectiveness
-- **Advantages**:
-  - Excellent performance on text analysis and policy interpretation tasks
-  - Reliable JSON output formatting for structured responses
-  - Fast inference with the 1.5-flash variant
-  - Strong multilingual support for international invoices
-- **Use Cases**: Invoice analysis against policies, conversational AI responses, content summarization
-
-#### Sentence Transformers (all-MiniLM-L6-v2)
-- **Rationale**: Lightweight, efficient embedding model optimized for semantic similarity tasks
-- **Advantages**:
-  - 384-dimensional embeddings (efficient storage and fast search)
-  - Good performance on semantic search benchmarks
-  - Fast inference time for real-time applications
-  - No API costs (runs locally)
-- **Use Cases**: Document embeddings, similarity search, content retrieval
-
-### Vector Store Integration Approach
-
-#### FAISS Implementation Strategy
-- **Index Type**: IndexFlatIP (Inner Product) for cosine similarity search
-- **Normalization**: L2 normalization for accurate cosine similarity computation
-- **Storage**: Separate metadata storage for efficient filtering
-- **Search Strategy**: Hybrid approach combining vector similarity with metadata filtering
-
-#### Document Processing Pipeline
-1. **Text Extraction**: Extract text from PDF invoices using PyPDF2
-2. **Content Preparation**: Combine invoice content with analysis results
-3. **Embedding Generation**: Create 384-dimensional vectors using Sentence Transformers
-4. **Index Storage**: Store embeddings in FAISS index with metadata
-5. **Search & Retrieval**: Perform similarity search with post-filtering
 
 ### Overall Architecture
 
@@ -176,12 +140,6 @@ The system uses carefully crafted prompts to ensure accurate and consistent invo
 ### Chatbot Prompt Engineering
 
 The RAG chatbot uses context-aware prompts for intelligent responses:
-
-#### Key Features:
-1. **Context Integration**: Incorporates search results and conversation history
-2. **Markdown Formatting**: Ensures readable, well-structured responses
-3. **Data-Driven Responses**: Focuses on actual analyzed invoice data
-4. **User-Centric Design**: Prioritizes helpful, actionable information
 
 #### Response Strategy:
 - Semantic search retrieval from vector database
@@ -238,62 +196,9 @@ The RAG chatbot uses context-aware prompts for intelligent responses:
     }
   ]
 }
-```
 
-### 3. System Health Check
-**GET** `/health`
 
-**Purpose**: Check system status and component health
 
-**Response Format**:
-```json
-{
-  "status": "healthy",
-  "timestamp": "2024-12-13T10:30:00",
-  "services": {
-    "vector_store": "operational",
-    "llm_service": "operational",
-    "conversation_manager": "operational"
-  }
-}
-```
-
-## ⚠️ Troubleshooting
-
-### Common Issues and Solutions
-
-1. **Backend API not running**
-   - **Solution**: Start with `python main.py`
-   - **Check**: Verify port 8000 is available
-   - **Logs**: Check console output for error messages
-
-2. **Gemini API errors**
-   - **Solution**: Verify API key in `.env` file
-   - **Check**: Ensure API key has proper permissions
-   - **Test**: Use a simple API call to verify connectivity
-
-3. **File upload issues**
-   - **Solution**: Ensure PDF files are valid and ZIP contains only PDFs
-   - **Check**: Verify file sizes are within limits (50MB max)
-   - **Format**: Ensure PDFs are text-based, not image-only
-
-4. **Vector search returning no results**
-   - **Solution**: Ensure invoices have been analyzed first
-   - **Check**: Verify FAISS database files exist in `./faiss_db/`
-   - **Reset**: Delete FAISS files to rebuild index if corrupted
-
-5. **Memory issues with large files**
-   - **Solution**: Process smaller batches of invoices
-   - **Check**: Ensure sufficient RAM (minimum 2GB recommended)
-   - **Cleanup**: Restart services to clear memory
-
-### Performance Optimization
-
-- **Concurrent Processing**: System supports multiple simultaneous users
-- **Memory Management**: Automatic cleanup of temporary files
-- **Caching**: Embedding model loaded once and reused
-- **Error Recovery**: Graceful handling of API failures and timeouts
 
 ---
 
-**Built with ❤️ using Google Gemini API, FAISS, and modern Python technologies**
